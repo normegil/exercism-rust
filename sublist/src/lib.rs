@@ -1,3 +1,5 @@
+use std::fmt::{Display, Debug};
+
 #[derive(Debug, PartialEq, Eq)]
 pub enum Comparison {
     Equal,
@@ -6,7 +8,7 @@ pub enum Comparison {
     Unequal,
 }
 
-pub fn sublist<T: PartialEq>(_first_list: &[T], _second_list: &[T]) -> Comparison {
+pub fn sublist<T: PartialEq + Debug>(_first_list: &[T], _second_list: &[T]) -> Comparison {
     if _first_list == _second_list {
         return Comparison::Equal;
     } else if is_sublist_of(_first_list, _second_list) {
@@ -17,7 +19,7 @@ pub fn sublist<T: PartialEq>(_first_list: &[T], _second_list: &[T]) -> Compariso
     return Comparison::Unequal;
 }
 
-pub fn is_sublist_of<T: PartialEq>(_searched_list: &[T], _super_list: &[T]) -> bool {
+pub fn is_sublist_of<T: PartialEq + Debug>(_searched_list: &[T], _super_list: &[T]) -> bool {
     if _super_list.len() == 0 {
         return _searched_list.len() == 0
     } else if _searched_list.len() == 0 {
@@ -35,7 +37,7 @@ pub fn is_sublist_of<T: PartialEq>(_searched_list: &[T], _super_list: &[T]) -> b
             .collect::<Vec<_>>();
 
         for index in found_indexes.iter() {
-            let searched_list_final_index = _searched_list.len() - 1; 
+            let searched_list_final_index = _searched_list.len(); 
             let end_index = index + searched_list_final_index;
             if end_index > _super_list.len() {
                 continue;

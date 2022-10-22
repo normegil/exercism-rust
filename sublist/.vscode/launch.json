@@ -7,16 +7,40 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug - Sublist",
+            "name": "Debug unit tests in library 'sublist'",
             "cargo": {
                 "args": [
                     "test",
-                    "--no-run"
-                ]
+                    "--no-run",
+                    "--lib",
+                    "--package=sublist"
+                ],
+                "filter": {
+                    "name": "sublist",
+                    "kind": "lib"
+                }
             },
             "args": [],
-            "cwd": "${workspaceRoot}/sublist/",
-            "sourceLanguages": ["rust"]
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'sublist'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=sublist",
+                    "--package=sublist"
+                ],
+                "filter": {
+                    "name": "sublist",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
         }
     ]
 }
