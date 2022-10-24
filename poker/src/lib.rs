@@ -119,7 +119,7 @@ enum Combination<'a> {
     FiveOfAKind,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Eq)]
 struct Hand<'a> {
     representation: &'a str,
     hand: Vec<Card>
@@ -171,4 +171,15 @@ impl<'a> PartialOrd for Hand<'a> {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     } 
+}
+
+impl<'a> PartialEq for Hand<'a> {
+    fn eq(&self, other: &Self) -> bool {
+        for (index, c) in self.hand.iter().enumerate() {
+            if c.value != other.hand[index].value {
+                return false;
+            }
+        }
+        return true;
+    }
 }
