@@ -5,14 +5,19 @@ use std::cmp::Ordering;
 /// Note the type signature: this function should return _the same_ reference to
 /// the winning hand(s) as were passed in, not reconstructed strings which happen to be equal.
 pub fn winning_hands<'a>(hands: &[&'a str]) -> Vec<&'a str> {
+    let mut hands_vec: Vec<Hand> = Vec::new();
     for hand in hands {
-        Hand::new(hand);
+        match Hand::new(hand) {
+            Ok(h) => hands_vec.push(h),
+            Err(e) => panic!("{}", e)
+        }
     }
+    hands_vec.sort();
 
-    unimplemented!("Out of {:?}, which hand wins?", hands)
+    vec![hands_vec[0].representation]
 }
 
-#[derive(PartialEq, Eq)]
+#[derive(PartialEq, Eq, Debug)]
 enum Suit {
     Hearts,
     Spades,
@@ -20,7 +25,7 @@ enum Suit {
     Diamonds
 }
 
-#[derive(PartialEq, Eq)]
+#[derive(PartialEq, Eq, Debug)]
 struct Card {
     suit: Suit,
     value: Value
@@ -58,7 +63,7 @@ impl PartialOrd for Card {
     } 
 }
 
-#[derive(PartialEq, Eq, PartialOrd, Ord)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Debug)]
 enum Value {
     Ace,
     King,
@@ -96,19 +101,21 @@ impl Value {
     }
 }
 
-enum Combination {
-    high_card(Suit),
-    one_pair,
-    two_pair,
-    three_of_a_kind,
-    straight,
-    flush,
-    full_house,
-    four_of_a_kind,
-    straight_flush,
-    five_of_a_kind,
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+enum Combination<'a> {
+    HighCard(&'a Card),
+    OnePair,
+    TwoPair,
+    ThreeOfAKind,
+    Straight,
+    Flush,
+    FullHouse,
+    FourOfAKind,
+    StraightFlush,
+    FiveOfAKind,
 }
 
+#[derive(Debug, PartialEq, Eq)]
 struct Hand<'a> {
     representation: &'a str,
     hand: Vec<Card>
@@ -123,25 +130,41 @@ impl<'a> Hand<'a> {
                 Err(e) => return Err(e)
             }    
         }
-
         hand.sort();
-
         Result::Ok(Hand { representation, hand })
     }
 
-    // fn best_hand(&self) -> Combination {
-    //     if self.is_five_of_a_kind() {
-    //         return Combination::five_of_a_kind;
-    //     } else {
-    //         return 
-    //     }
-    // }
+    fn best_hand(&self) -> Combination {
+        if self.is_five_of_a_kind() {
+            return Combination::FiveOfAKind;
+        } else {
+            return Combination::HighCard(self.highest_card())
+        }
+    }
 
     fn is_five_of_a_kind(&self) -> bool {
         let x = &self.hand[0];
         self.hand.iter().all(|y| y == x)
     }
 
-    // fn highest_card(&self) -> bool {
+    // fn is_straight_flush(&self) -> bool {
+    //     let x = &self.hand[0];
+    //     self.hand.iter().all(|y| y == x)
     // }
+
+    fn highest_card(&self) -> &Card {
+        &self.hand[0]
+    }
+}
+
+impl<'a> Ord for Hand<'a> {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.best_hand().cmp(&other.best_hand())
+    } 
+}
+
+impl<'a> PartialOrd for Hand<'a> {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    } 
 }
