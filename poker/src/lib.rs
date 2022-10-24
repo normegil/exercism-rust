@@ -14,7 +14,7 @@ pub fn winning_hands<'a>(hands: &[&'a str]) -> Vec<&'a str> {
     }
     hands_vec.sort();
 
-    vec![hands_vec[0].representation]
+    hands_vec.iter().map(|h| h.representation).collect()
 }
 
 #[derive(PartialEq, Eq, Debug)]

@@ -24,7 +24,6 @@ fn test_single_hand_always_wins() {
 }
 
 #[test]
-#[ignore]
 fn test_duplicate_hands_always_tie() {
     let input = &["3S 4S 5D 6H JH", "3S 4S 5D 6H JH", "3S 4S 5D 6H JH"];
     assert_eq!(&winning_hands(input), input)
