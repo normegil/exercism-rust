@@ -14,7 +14,11 @@ pub fn winning_hands<'a>(hands: &[&'a str]) -> Vec<&'a str> {
     }
     hands_vec.sort();
 
-    hands_vec.iter().map(|h| h.representation).collect()
+    let winning_hand = &hands_vec[0];
+    hands_vec.iter()
+        .filter(|h| h == &winning_hand)
+        .map(|h| h.representation)
+        .collect()
 }
 
 #[derive(PartialEq, Eq, Debug)]
