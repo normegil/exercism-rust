@@ -73,14 +73,12 @@ fn test_two_pairs_beats_one_pair() {
 }
 
 #[test]
-#[ignore]
 fn test_two_pair_ranks() {
     // both hands have two pairs, highest ranked pair wins
     test(&["2S 8H 2D 8D 3H", "4S 5H 4C 8S 5D"], &["2S 8H 2D 8D 3H"])
 }
 
 #[test]
-#[ignore]
 fn test_two_pairs_second_pair_cascade() {
     // both hands have two pairs, with the same highest ranked pair,
     // tie goes to low pair
