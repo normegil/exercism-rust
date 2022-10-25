@@ -115,7 +115,7 @@ enum Combination<'a> {
     Straight,
     ThreeOfAKind,
     TwoPair,
-    OnePair,
+    OnePair(&'a Card),
     HighCard(&'a Card),
 }
 
@@ -141,8 +141,8 @@ impl<'a> Hand<'a> {
     fn best_hand(&self) -> Combination {
         if self.is_five_of_a_kind() {
             return Combination::FiveOfAKind;
-        } else if self.is_pair() {
-            return Combination::OnePair;
+        } else if let Option::Some(c) = self.highest_pair() {
+            return Combination::OnePair(c);
         } else {
             return Combination::HighCard(self.highest_card())
         }
@@ -153,17 +153,17 @@ impl<'a> Hand<'a> {
         self.hand.iter().all(|y| y == x)
     }
 
-    fn is_pair(&self) -> bool {
+    fn highest_pair(&self) -> Option<&Card> {
         for (index, c) in self.hand.iter().enumerate() {
             let count = self.hand[index..].iter()
                 .filter(|y|c.value == y.value)
                 .count();
             println!("{} - {:?}: {} found", self.representation, c, count);
             if count == 2 {
-                return true;
+                return Option::Some(c);
             }
         }
-        false
+        return Option::None;
     }
 
     // fn is_straight_flush(&self) -> bool {
