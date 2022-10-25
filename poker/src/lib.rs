@@ -113,7 +113,7 @@ enum Combination {
     FullHouse,
     Flush,
     Straight,
-    ThreeOfAKind,
+    ThreeOfAKind(Value),
     TwoPair(Value, Value),
     OnePair(Value),
     HighCard(Value),
@@ -141,6 +141,8 @@ impl<'a> Hand<'a> {
     fn best_hand(&self) -> Combination {
         if self.is_five_of_a_kind() {
             return Combination::FiveOfAKind;
+        } else if let Option::Some(val) = self.highest_three_of_a_kind() {
+            return Combination::ThreeOfAKind(val);
         } else if let Option::Some((a, b)) = self.highest_two_pair() {
             return Combination::TwoPair(a, b);
         } else if let Option::Some(c) = self.highest_pair() {
@@ -153,6 +155,18 @@ impl<'a> Hand<'a> {
     fn is_five_of_a_kind(&self) -> bool {
         let x = &self.hand[0];
         self.hand.iter().all(|y| y == x)
+    }
+
+    fn highest_three_of_a_kind(&self) -> Option<Value> {
+        for (index, c) in self.hand.iter().enumerate() {
+            let count = self.hand[index..].iter()
+                .filter(|y|c.value == y.value)
+                .count();
+            if count == 3 {
+                return Option::Some(c.value);
+            }
+        }
+        return Option::None;
     }
 
     fn highest_two_pair(&self) -> Option<(Value, Value)> {

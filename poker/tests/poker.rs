@@ -86,7 +86,6 @@ fn test_two_pairs_second_pair_cascade() {
 }
 
 #[test]
-#[ignore]
 fn test_two_pairs_last_card_cascade() {
     // both hands have two identically ranked pairs,
     // tie goes to remaining card (kicker)
@@ -94,7 +93,6 @@ fn test_two_pairs_last_card_cascade() {
 }
 
 #[test]
-#[ignore]
 fn test_three_of_a_kind_beats_two_pair() {
     test(&["2S 8H 2H 8D JH", "4S 5H 4C 8S 4H"], &["4S 5H 4C 8S 4H"])
 }
