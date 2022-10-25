@@ -68,7 +68,6 @@ fn test_highest_pair_wins() {
 }
 
 #[test]
-#[ignore]
 fn test_two_pairs_beats_one_pair() {
     test(&["2S 8H 6S 8D JH", "4S 5H 4C 8C 5C"], &["4S 5H 4C 8C 5C"])
 }

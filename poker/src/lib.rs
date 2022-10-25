@@ -67,7 +67,7 @@ impl PartialOrd for Card {
     } 
 }
 
-#[derive(PartialEq, Eq, PartialOrd, Ord, Debug)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Debug, Copy, Clone)]
 enum Value {
     Ace,
     King,
@@ -106,7 +106,7 @@ impl Value {
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
-enum Combination<'a> {
+enum Combination {
     FiveOfAKind,
     StraightFlush,
     FourOfAKind,
@@ -114,9 +114,9 @@ enum Combination<'a> {
     Flush,
     Straight,
     ThreeOfAKind,
-    TwoPair,
-    OnePair(&'a Card),
-    HighCard(&'a Card),
+    TwoPair(Value, Value),
+    OnePair(Value),
+    HighCard(Value),
 }
 
 #[derive(Debug, Eq)]
@@ -141,10 +141,12 @@ impl<'a> Hand<'a> {
     fn best_hand(&self) -> Combination {
         if self.is_five_of_a_kind() {
             return Combination::FiveOfAKind;
+        } else if let Option::Some((a, b)) = self.highest_two_pair() {
+            return Combination::TwoPair(a, b);
         } else if let Option::Some(c) = self.highest_pair() {
             return Combination::OnePair(c);
         } else {
-            return Combination::HighCard(self.highest_card())
+            return Combination::HighCard(self.highest_value())
         }
     }
 
@@ -153,14 +155,33 @@ impl<'a> Hand<'a> {
         self.hand.iter().all(|y| y == x)
     }
 
-    fn highest_pair(&self) -> Option<&Card> {
+    fn highest_two_pair(&self) -> Option<(Value, Value)> {
+        let mut found_pair: Option<Value> = Option::None;
         for (index, c) in self.hand.iter().enumerate() {
             let count = self.hand[index..].iter()
                 .filter(|y|c.value == y.value)
                 .count();
-            println!("{} - {:?}: {} found", self.representation, c, count);
             if count == 2 {
-                return Option::Some(c);
+                match found_pair {
+                    None => found_pair = Option::Some(c.value),
+                    Some(first_pair) => {
+                        let mut pairs = vec![first_pair, c.value];
+                        pairs.sort();
+                        return Option::Some((pairs[0], pairs[1]))
+                    },
+                }
+            }
+        }
+        return Option::None;
+    }
+
+    fn highest_pair(&self) -> Option<Value> {
+        for (index, c) in self.hand.iter().enumerate() {
+            let count = self.hand[index..].iter()
+                .filter(|y|c.value == y.value)
+                .count();
+            if count == 2 {
+                return Option::Some(c.value);
             }
         }
         return Option::None;
@@ -171,8 +192,8 @@ impl<'a> Hand<'a> {
     //     self.hand.iter().all(|y| y == x)
     // }
 
-    fn highest_card(&self) -> &Card {
-        &self.hand[0]
+    fn highest_value(&self) -> Value {
+        self.hand[0].value
     }
 }
 
