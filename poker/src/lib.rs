@@ -107,9 +107,9 @@ impl Value {
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 enum Combination {
-    FiveOfAKind,
+    FiveOfAKind(Value),
     StraightFlush,
-    FourOfAKind,
+    FourOfAKind(Value),
     FullHouse,
     Flush,
     Straight,
@@ -138,9 +138,9 @@ impl<'a> Hand<'a> {
         Result::Ok(Hand { representation, hand })
     }
 
-    fn best_hand(&self) -> Combination {
-        if self.is_five_of_a_kind() {
-            return Combination::FiveOfAKind;
+    fn combination(&self) -> Combination {
+        if let Option::Some(val) = self.is_five_of_a_kind() {
+            return Combination::FiveOfAKind(val);
         } else if let Option::Some(val) = self.highest_three_of_a_kind() {
             return Combination::ThreeOfAKind(val);
         } else if let Option::Some((a, b)) = self.highest_two_pair() {
@@ -152,9 +152,12 @@ impl<'a> Hand<'a> {
         }
     }
 
-    fn is_five_of_a_kind(&self) -> bool {
+    fn is_five_of_a_kind(&self) -> Option<Value> {
         let x = &self.hand[0];
-        self.hand.iter().all(|y| y == x)
+        if self.hand.iter().all(|y| y == x) {
+            return Option::Some(x.value);
+        }
+        return Option::None;
     }
 
     fn highest_three_of_a_kind(&self) -> Option<Value> {
@@ -213,8 +216,23 @@ impl<'a> Hand<'a> {
 
 impl<'a> Ord for Hand<'a> {
     fn cmp(&self, other: &Self) -> Ordering {
-        self.best_hand().cmp(&other.best_hand())
-    } 
+        let comb1 = self.combination();
+        let comb2 = other.combination();
+        match comb1.cmp(&comb2) {
+            Ordering::Less => return Ordering::Less,
+            Ordering::Greater => return Ordering::Greater,
+            Ordering::Equal => {
+                for (index, c) in self.hand.iter().enumerate() {
+                    match c.value.cmp(&other.hand[index].value) {
+                        Ordering::Less => return Ordering::Less,
+                        Ordering::Greater => return Ordering::Greater,
+                        Ordering::Equal => continue
+                    }
+                }
+                Ordering::Equal
+            }
+        }
+    }
 }
 
 impl<'a> PartialOrd for Hand<'a> {

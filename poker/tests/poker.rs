@@ -109,7 +109,6 @@ fn test_low_three_of_a_kind_beats_high_two_pair() {
 }
 
 #[test]
-#[ignore]
 fn test_three_of_a_kind_cascade_ranks() {
     // with multiple decks, two players can have same three of a kind,
     // ties go to highest remaining cards
