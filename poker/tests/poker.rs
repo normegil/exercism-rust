@@ -98,7 +98,6 @@ fn test_three_of_a_kind_beats_two_pair() {
 }
 
 #[test]
-#[ignore]
 fn test_three_of_a_kind_ranks() {
     //both hands have three of a kind, tie goes to highest ranked triplet
     test(&["2S 2H 2C 8D JH", "4S AH AS 8C AD"], &["4S AH AS 8C AD"])

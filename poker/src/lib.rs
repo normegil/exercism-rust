@@ -87,7 +87,7 @@ enum Value {
 impl Value {
     fn new(representation: &str) -> Result<Value, String> {
         match representation {
-            "1" => Result::Ok(Value::Ace),
+            "A" => Result::Ok(Value::Ace),
             "K" => Result::Ok(Value::King),
             "Q" => Result::Ok(Value::Queen),
             "J" => Result::Ok(Value::Jack),
