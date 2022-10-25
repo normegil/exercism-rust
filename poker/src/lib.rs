@@ -103,6 +103,24 @@ impl Value {
             _ => Result::Err(format!("'{}' value not recognized", representation)) 
         }
     }
+
+    fn as_array() -> [Value; 13] {
+        [
+            Value::Ace,
+            Value::King,
+            Value::Queen,
+            Value::Jack,
+            Value::Ten,
+            Value::Nine,
+            Value::Eight,
+            Value::Seven,
+            Value::Six,
+            Value::Five,
+            Value::Four,
+            Value::Three,
+            Value::Two,
+        ]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -112,7 +130,7 @@ enum Combination {
     FourOfAKind(Value),
     FullHouse,
     Flush,
-    Straight,
+    Straight(Value),
     ThreeOfAKind(Value),
     TwoPair(Value, Value),
     OnePair(Value),
@@ -141,6 +159,8 @@ impl<'a> Hand<'a> {
     fn combination(&self) -> Combination {
         if let Option::Some(val) = self.is_five_of_a_kind() {
             return Combination::FiveOfAKind(val);
+        } else if let Option::Some(val) = self.is_straight() {
+            return Combination::Straight(val);
         } else if let Option::Some(val) = self.highest_three_of_a_kind() {
             return Combination::ThreeOfAKind(val);
         } else if let Option::Some((a, b)) = self.highest_two_pair() {
@@ -159,6 +179,20 @@ impl<'a> Hand<'a> {
         }
         return Option::None;
     }
+
+    fn is_straight(&self) -> Option<Value> {
+        let first_value = self.hand[0].value;
+        if first_value < Value::Six {
+            return Option::None;
+        } 
+
+        let val_array = Value::as_array();
+        let index = val_array.iter().position(|x| x == &self.hand[0].value).unwrap();
+        if self.extract_values() == val_array[index..index+5] {
+            return Option::Some(self.hand[0].value);
+        }
+        return Option::None;
+    } 
 
     fn highest_three_of_a_kind(&self) -> Option<Value> {
         for (index, c) in self.hand.iter().enumerate() {
@@ -211,6 +245,12 @@ impl<'a> Hand<'a> {
 
     fn highest_value(&self) -> Value {
         self.hand[0].value
+    }
+
+    fn extract_values(&self) -> Vec<Value> {
+        let mut values: Vec<Value> = self.hand.iter().map(|x| x.value).collect();
+        values.sort();
+        values
     }
 }
 

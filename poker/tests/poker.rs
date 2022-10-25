@@ -116,7 +116,6 @@ fn test_three_of_a_kind_cascade_ranks() {
 }
 
 #[test]
-#[ignore]
 fn test_straight_beats_three_of_a_kind() {
     test(&["4S 5H 4C 8D 4H", "3S 4D 2S 6D 5C"], &["3S 4D 2S 6D 5C"])
 }
