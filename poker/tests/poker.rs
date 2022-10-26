@@ -121,7 +121,6 @@ fn test_straight_beats_three_of_a_kind() {
 }
 
 #[test]
-#[ignore]
 fn test_aces_can_end_a_straight_high() {
     // aces can end a straight (10 J Q K A)
     test(&["4S 5H 4C 8D 4H", "10D JH QS KD AC"], &["10D JH QS KD AC"])

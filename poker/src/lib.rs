@@ -182,7 +182,7 @@ impl<'a> Hand<'a> {
 
     fn is_straight(&self) -> Option<Value> {
         let first_value = self.hand[0].value;
-        if first_value < Value::Six {
+        if first_value > Value::Six {
             return Option::None;
         } 
 
@@ -239,8 +239,18 @@ impl<'a> Hand<'a> {
     }
 
     // fn is_straight_flush(&self) -> bool {
-    //     let x = &self.hand[0];
-    //     self.hand.iter().all(|y| y == x)
+    //     let highest_hand_value = &self.hand[0].value;
+    //     if *highest_hand_value < Value::Six {
+    //         return false;
+    //     }
+
+    //     let value_array = Value::as_array();
+    //     for (index, val) in value_array.iter().enumerate() {
+    //         if highest_hand_value == val {
+    //            return value_array[index..index+5] == self.extract_values();
+    //         }
+    //     }
+    //     return false;
     // }
 
     fn highest_value(&self) -> Value {
