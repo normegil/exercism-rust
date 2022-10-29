@@ -125,8 +125,7 @@ impl Value {
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 enum Combination {
-    FiveOfAKind(Value),
-    StraightFlush,
+    StraightFlush(Value),
     FourOfAKind(Value),
     FullHouse(Value, Value),
     Flush(Value),
@@ -157,29 +156,32 @@ impl<'a> Hand<'a> {
     }
 
     fn combination(&self) -> Combination {
-        if let Option::Some(val) = self.is_five_of_a_kind() {
-            return Combination::FiveOfAKind(val);
+        if let Option::Some(val) = self.is_straight_flush() {
+            return Combination::StraightFlush(val);
+        } else if let Option::Some(val) = self.count(4) {
+            return Combination::FourOfAKind(val);
         } else if let Option::Some((val1, val2)) = self.is_full_house() {
             return Combination::FullHouse(val1, val2);
         } else if let Option::Some(val) = self.is_flush() {
             return Combination::Flush(val);
         } else if let Option::Some(val) = self.is_straight() {
             return Combination::Straight(val);
-        } else if let Option::Some(val) = self.highest_three_of_a_kind() {
+        } else if let Option::Some(val) = self.count(3) {
             return Combination::ThreeOfAKind(val);
         } else if let Option::Some((a, b)) = self.highest_two_pair() {
             return Combination::TwoPair(a, b);
-        } else if let Option::Some(c) = self.highest_pair() {
+        } else if let Option::Some(c) = self.count(2) {
             return Combination::OnePair(c);
         } else {
             return Combination::HighCard(self.highest_value())
         }
     }
 
-    fn is_five_of_a_kind(&self) -> Option<Value> {
-        let x = &self.hand[0];
-        if self.hand.iter().all(|y| y == x) {
-            return Option::Some(x.value);
+    fn is_straight_flush(&self) -> Option<Value> {
+        if self.is_flush().is_some() {
+            if let Some(val) = self.is_straight() {
+                return Option::Some(val);
+            } 
         }
         return Option::None;
     }
@@ -231,18 +233,6 @@ impl<'a> Hand<'a> {
             return Option::Some(first_value);
         }
         return Option::None;
-    } 
-
-    fn highest_three_of_a_kind(&self) -> Option<Value> {
-        for (index, c) in self.hand.iter().enumerate() {
-            let count = self.hand[index..].iter()
-                .filter(|y|c.value == y.value)
-                .count();
-            if count == 3 {
-                return Option::Some(c.value);
-            }
-        }
-        return Option::None;
     }
 
     fn highest_two_pair(&self) -> Option<(Value, Value)> {
@@ -265,12 +255,12 @@ impl<'a> Hand<'a> {
         return Option::None;
     }
 
-    fn highest_pair(&self) -> Option<Value> {
+    fn count(&self, required: usize) -> Option<Value> {
         for (index, c) in self.hand.iter().enumerate() {
             let count = self.hand[index..].iter()
                 .filter(|y|c.value == y.value)
                 .count();
-            if count == 2 {
+            if count == required {
                 return Option::Some(c.value);
             }
         }
