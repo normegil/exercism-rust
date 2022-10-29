@@ -128,7 +128,7 @@ enum Combination {
     FiveOfAKind(Value),
     StraightFlush,
     FourOfAKind(Value),
-    FullHouse,
+    FullHouse(Value, Value),
     Flush(Value),
     Straight(Value),
     ThreeOfAKind(Value),
@@ -159,6 +159,8 @@ impl<'a> Hand<'a> {
     fn combination(&self) -> Combination {
         if let Option::Some(val) = self.is_five_of_a_kind() {
             return Combination::FiveOfAKind(val);
+        } else if let Option::Some((val1, val2)) = self.is_full_house() {
+            return Combination::FullHouse(val1, val2);
         } else if let Option::Some(val) = self.is_flush() {
             return Combination::Flush(val);
         } else if let Option::Some(val) = self.is_straight() {
@@ -178,6 +180,28 @@ impl<'a> Hand<'a> {
         let x = &self.hand[0];
         if self.hand.iter().all(|y| y == x) {
             return Option::Some(x.value);
+        }
+        return Option::None;
+    }
+
+    fn is_full_house(&self) -> Option<(Value, Value)> {
+        let mut pair: Option<Value> = Option::None;
+        let mut three_of_a_kind: Option<Value> = Option::None;
+        for  c in self.hand.iter() {
+            let count = self.hand.iter()
+                .filter(|y|c.value == y.value)
+                .count();
+            if count == 3 {
+                three_of_a_kind = Option::Some(c.value);
+            } else if count == 2 {
+                pair = Option::Some(c.value);
+            }
+        }
+        
+        if three_of_a_kind.is_some() && pair.is_some() {
+            let three = three_of_a_kind.unwrap();
+            let pair = pair.unwrap();
+            return Option::Some((three, pair));
         }
         return Option::None;
     }

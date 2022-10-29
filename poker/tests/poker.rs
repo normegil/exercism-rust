@@ -162,20 +162,17 @@ fn test_flush_cascade() {
 }
 
 #[test]
-#[ignore]
 fn test_full_house_beats_a_flush() {
     test(&["3H 6H 7H 8H 5H", "4S 5C 4C 5D 4H"], &["4S 5C 4C 5D 4H"])
 }
 
 #[test]
-#[ignore]
 fn test_full_house_ranks() {
     // both hands have a full house, tie goes to highest-ranked triplet
     test(&["4H 4S 4D 9S 9D", "5H 5S 5D 8S 8D"], &["5H 5S 5D 8S 8D"])
 }
 
 #[test]
-#[ignore]
 fn test_full_house_cascade() {
     // with multiple decks, both hands have a full house with the same triplet, tie goes to the pair
     test(&["5H 5S 5D 9S 9D", "5H 5S 5D 8S 8D"], &["5H 5S 5D 9S 9D"])
