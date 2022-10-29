@@ -133,21 +133,18 @@ fn test_aces_can_start_a_straight_low() {
 }
 
 #[test]
-#[ignore]
 fn test_no_ace_in_middle_of_straight() {
     // aces cannot be in the middle of a straight (Q K A 2 3)
     test(&["2C 3D 7H 5H 2S", "QS KH AC 2D 3S"], &["2C 3D 7H 5H 2S"])
 }
 
 #[test]
-#[ignore]
 fn test_straight_ranks() {
     // both hands with a straight, tie goes to highest ranked card
     test(&["4S 6C 7S 8D 5H", "5S 7H 8S 9D 6H"], &["5S 7H 8S 9D 6H"])
 }
 
 #[test]
-#[ignore]
 fn test_straight_scoring() {
     // even though an ace is usually high, a 5-high straight is the lowest-scoring straight
     test(&["2H 3C 4D 5D 6H", "4S AH 3S 2D 5H"], &["2H 3C 4D 5D 6H"])

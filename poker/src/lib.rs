@@ -181,27 +181,25 @@ impl<'a> Hand<'a> {
     }
 
     fn is_straight(&self) -> Option<Value> {
+        let hand_values = self.extract_values();
+        if hand_values == [Value::Ace, Value::Five, Value::Four, Value::Three, Value::Two] {
+            println!("Low Straight: {:?}", &hand_values);
+            return Option::Some(Value::Five);
+        } else if hand_values[0] > Value::Six {
+            println!("Straight impossible: {:?}", &hand_values);
+            return Option::None;
+        }
+
         let first_value = self.hand[0].value;
         let val_array = Value::as_array();
         let first_value_index = val_array.iter().position(|x| x == &first_value).unwrap();
 
-        
-        let mut wrap_around = false;
-        for (current_index, c) in self.hand.iter().enumerate() {
-            let to_check_index = first_value_index + current_index;
-            if wrap_around || c.value != val_array[to_check_index] {
-                if first_value != Value::Ace{
-                    return Option::None
-                }
-
-                let to_check_index = val_array.len() - self.hand.len() + current_index;
-                if c.value != val_array[to_check_index] {
-                    return Option::None;
-                }
-                wrap_around = true;
-            }
+        if hand_values == val_array[first_value_index..first_value_index+5] {
+            println!("Straight: {:?}", &hand_values);
+            return Option::Some(first_value);
         }
-        return Option::Some(first_value);
+        println!("Not a straight: {:?}", &hand_values);
+        return Option::None;
     } 
 
     fn highest_three_of_a_kind(&self) -> Option<Value> {
