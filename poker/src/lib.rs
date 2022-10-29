@@ -129,7 +129,7 @@ enum Combination {
     StraightFlush,
     FourOfAKind(Value),
     FullHouse,
-    Flush,
+    Flush(Value),
     Straight(Value),
     ThreeOfAKind(Value),
     TwoPair(Value, Value),
@@ -159,6 +159,8 @@ impl<'a> Hand<'a> {
     fn combination(&self) -> Combination {
         if let Option::Some(val) = self.is_five_of_a_kind() {
             return Combination::FiveOfAKind(val);
+        } else if let Option::Some(val) = self.is_flush() {
+            return Combination::Flush(val);
         } else if let Option::Some(val) = self.is_straight() {
             return Combination::Straight(val);
         } else if let Option::Some(val) = self.highest_three_of_a_kind() {
@@ -180,13 +182,20 @@ impl<'a> Hand<'a> {
         return Option::None;
     }
 
+    fn is_flush(&self) -> Option<Value> {
+        let first_card = &self.hand[0];
+        let x = &first_card.suit;
+        if self.hand.iter().all(|y| &y.suit == x) {
+            return Option::Some(first_card.value);
+        }
+        return Option::None;
+    }
+
     fn is_straight(&self) -> Option<Value> {
         let hand_values = self.extract_values();
         if hand_values == [Value::Ace, Value::Five, Value::Four, Value::Three, Value::Two] {
-            println!("Low Straight: {:?}", &hand_values);
             return Option::Some(Value::Five);
         } else if hand_values[0] > Value::Six {
-            println!("Straight impossible: {:?}", &hand_values);
             return Option::None;
         }
 
@@ -195,10 +204,8 @@ impl<'a> Hand<'a> {
         let first_value_index = val_array.iter().position(|x| x == &first_value).unwrap();
 
         if hand_values == val_array[first_value_index..first_value_index+5] {
-            println!("Straight: {:?}", &hand_values);
             return Option::Some(first_value);
         }
-        println!("Not a straight: {:?}", &hand_values);
         return Option::None;
     } 
 

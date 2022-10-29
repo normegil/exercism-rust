@@ -151,13 +151,11 @@ fn test_straight_scoring() {
 }
 
 #[test]
-#[ignore]
 fn test_flush_beats_a_straight() {
     test(&["4C 6H 7D 8D 5H", "2S 4S 5S 6S 7S"], &["2S 4S 5S 6S 7S"])
 }
 
 #[test]
-#[ignore]
 fn test_flush_cascade() {
     // both hands have a flush, tie goes to high card, down to the last one if necessary
     test(&["4H 7H 8H 9H 6H", "2S 4S 5S 6S 7S"], &["4H 7H 8H 9H 6H"])
