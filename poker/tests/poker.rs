@@ -127,7 +127,6 @@ fn test_aces_can_end_a_straight_high() {
 }
 
 #[test]
-#[ignore]
 fn test_aces_can_start_a_straight_low() {
     // aces can start a straight (A 2 3 4 5)
     test(&["4S 5H 4C 8D 4H", "4D AH 3S 2D 5C"], &["4D AH 3S 2D 5C"])

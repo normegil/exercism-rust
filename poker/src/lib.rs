@@ -182,16 +182,26 @@ impl<'a> Hand<'a> {
 
     fn is_straight(&self) -> Option<Value> {
         let first_value = self.hand[0].value;
-        if first_value > Value::Six {
-            return Option::None;
-        } 
-
         let val_array = Value::as_array();
-        let index = val_array.iter().position(|x| x == &self.hand[0].value).unwrap();
-        if self.extract_values() == val_array[index..index+5] {
-            return Option::Some(self.hand[0].value);
+        let first_value_index = val_array.iter().position(|x| x == &first_value).unwrap();
+
+        
+        let mut wrap_around = false;
+        for (current_index, c) in self.hand.iter().enumerate() {
+            let to_check_index = first_value_index + current_index;
+            if wrap_around || c.value != val_array[to_check_index] {
+                if first_value != Value::Ace{
+                    return Option::None
+                }
+
+                let to_check_index = val_array.len() - self.hand.len() + current_index;
+                if c.value != val_array[to_check_index] {
+                    return Option::None;
+                }
+                wrap_around = true;
+            }
         }
-        return Option::None;
+        return Option::Some(first_value);
     } 
 
     fn highest_three_of_a_kind(&self) -> Option<Value> {
