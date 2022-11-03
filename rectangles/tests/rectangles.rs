@@ -43,7 +43,6 @@ fn test_two_rectangles_no_shared_parts() {
 }
 
 #[test]
-#[ignore]
 fn test_five_rectangles_three_regions() {
     #[rustfmt::skip]
     let lines = &[

@@ -49,18 +49,19 @@ fn to_symbol_vector(lines: &[&str]) -> Vec<Vec<Option<Symbol>>> {
 }
 
 fn find_horizontal_edge(start: Vertice, line: &Vec<Option<Symbol>>) -> Option<Edge> {
-    if start.x >= line.len() - 1 {
+    if start.y >= line.len() - 1 {
         return Option::None;
-    } else if line[start.x + 1].is_none() {
+    } else if line.get(start.y + 1).is_none() {
         return Option::None;
     }
-    for index in start.x..line.len()-1 {
-        match line[index] {
+    for index in start.y+1..line.len() {
+        let tmp = &line[index]; 
+        match tmp {
             Option::None => panic!("Horizontal edge search: space found"),
             Option::Some(Symbol::VerticalEdge) => panic!("Horizontal edge search: vertical edge found"),
             Option::Some(Symbol::HorizontalEdge) => continue,
             Option::Some(Symbol::Vertice) => {
-                let edge = Edge::new(start, Vertice { x: index, y: start.y });
+                let edge = Edge::new(start, Vertice { x: start.x, y: index });
                 return Option::Some(edge);
             }
         }
@@ -69,18 +70,18 @@ fn find_horizontal_edge(start: Vertice, line: &Vec<Option<Symbol>>) -> Option<Ed
 }
 
 fn find_vertical_edge(start: Vertice, grid: &Vec<Vec<Option<Symbol>>>) -> Option<Edge> {
-    if start.y >= grid.len() - 1 {
+    if start.x >= grid.len() - 1 {
         return Option::None;
-    } else if grid[start.y + 1][start.x].is_none() {
+    } else if grid[start.x + 1][start.y].is_none() {
         return Option::None;
     }
-    for index in start.y..grid.len()-1 {
-        match grid[index][start.x] {
+    for index in start.x+1..grid.len() {
+        match grid[index][start.y] {
             Option::None => panic!("Vertical edge search: space found"),
             Option::Some(Symbol::VerticalEdge) => continue,
             Option::Some(Symbol::HorizontalEdge) => panic!("Vertical edge search: horizontal edge found"),
             Option::Some(Symbol::Vertice) => {
-                let edge = Edge::new(start, Vertice { x: start.x, y: index });
+                let edge = Edge::new(start, Vertice { x: index, y: start.y });
                 return Option::Some(edge);
             }
         }
@@ -125,7 +126,7 @@ impl Rectangle {
         let left_edge;
         let lower_edge;
         let right_edge;
-        match find_horizontal_edge(upper_left, &grid[upper_left.y]) {
+        match find_horizontal_edge(upper_left, &(grid[upper_left.x])) {
             None => return Option::None,
             Some(edge) => upper_edge = edge
         }
@@ -133,7 +134,7 @@ impl Rectangle {
             None => return Option::None,
             Some(edge) => left_edge = edge,
         }
-        match find_horizontal_edge(left_edge.last, &grid[left_edge.last.y]) {
+        match find_horizontal_edge(left_edge.last, &grid[left_edge.last.x]) {
             None => return Option::None,
             Some(edge) => lower_edge = edge
         }
