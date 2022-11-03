@@ -7,21 +7,18 @@ fn test_zero_area_1() {
 }
 
 #[test]
-#[ignore]
 fn test_zero_area_2() {
     let lines = &[""];
     assert_eq!(0, count(lines))
 }
 
 #[test]
-#[ignore]
 fn test_empty_area() {
     let lines = &[" "];
     assert_eq!(0, count(lines))
 }
 
 #[test]
-#[ignore]
 fn test_one_rectangle() {
     #[rustfmt::skip]
     let lines = &[
@@ -33,7 +30,6 @@ fn test_one_rectangle() {
 }
 
 #[test]
-#[ignore]
 fn test_two_rectangles_no_shared_parts() {
     #[rustfmt::skip]
     let lines = &[
