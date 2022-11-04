@@ -10,12 +10,18 @@ impl Clock {
     pub fn new(hours: i32, minutes: i32) -> Self {
         let mut tmp_hours = hours;
         let mut tmp_minutes = minutes;
-        if tmp_minutes / 60 > 0 {
-            tmp_minutes -= (tmp_minutes / 60) * 60;
-            tmp_hours += tmp_minutes / 60;
+
+        if minutes < 0 {
+            tmp_minutes = 60 + (minutes % 60);
+            tmp_hours = tmp_hours + ((minutes / 60) - 1);
+        } else if minutes / 60 > 0 {
+            tmp_minutes -= (minutes / 60) * 60;
+            tmp_hours += minutes / 60;
         }
 
-        if tmp_hours / 24 > 0 {
+        if tmp_hours < 0 {
+            tmp_hours = 24 + (hours % 24);
+        } else if tmp_hours / 24 > 0 {
             tmp_hours -= (tmp_hours / 24) * 24;
         }
         
