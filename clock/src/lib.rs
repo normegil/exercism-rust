@@ -8,24 +8,7 @@ pub struct Clock {
 
 impl Clock {
     pub fn new(hours: i32, minutes: i32) -> Self {
-        let mut tmp_hours = hours;
-        let mut tmp_minutes = minutes;
-
-        if minutes < 0 {
-            tmp_minutes = 60 + (minutes % 60);
-            tmp_hours = tmp_hours + ((minutes / 60) - 1);
-        } else if minutes / 60 > 0 {
-            tmp_minutes -= (minutes / 60) * 60;
-            tmp_hours += minutes / 60;
-        }
-
-        if tmp_hours < 0 {
-            tmp_hours = 24 + (hours % 24);
-        } else if tmp_hours / 24 > 0 {
-            tmp_hours -= (tmp_hours / 24) * 24;
-        }
-        
-        Clock { hours: tmp_hours, minutes: tmp_minutes }
+        Clock { hours, minutes }.normalize_minutes().normalize_hours()
     }
 
     pub fn add_minutes(&self, minutes: i32) -> Self {
@@ -39,6 +22,38 @@ impl Clock {
             hours -= 24;
         }
         Clock { hours: hours, minutes: total_minutes }
+    }
+
+    fn normalize_minutes(&self) -> Self {
+        let mut change_hours = 0;
+        let mut final_minutes = self.minutes;
+        if final_minutes / 60 != 0 {
+            final_minutes = if final_minutes > 0 { final_minutes % 60 } else { 60 + (final_minutes % 60) };
+            change_hours = self.minutes / 60;
+            if final_minutes == 60 {
+                final_minutes = 0;
+            }
+            if self.minutes < 0 && self.minutes % 60 != 0{
+                change_hours -= 1;
+            }
+        } else if final_minutes < 0 {
+            final_minutes = 60 + final_minutes;
+            change_hours -= 1;
+        }
+        Clock { hours: self.hours + change_hours, minutes: final_minutes }
+    }
+
+    fn normalize_hours(&self) -> Self {
+        let mut final_hours = self.hours;
+        if final_hours / 24 != 0 {
+            final_hours = if final_hours > 0 { final_hours % 24 } else { 24 + (final_hours % 24) };
+            if final_hours == 24 {
+                final_hours = 0;
+            }
+        } else if final_hours < 0 {
+            final_hours = 24 + final_hours;
+        }
+        Clock { hours: final_hours, minutes: self.minutes }
     }
 }
 
