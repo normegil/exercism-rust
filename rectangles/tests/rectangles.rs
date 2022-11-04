@@ -56,7 +56,6 @@ fn test_five_rectangles_three_regions() {
 }
 
 #[test]
-#[ignore]
 fn rectangle_of_height_1() {
     #[rustfmt::skip]
     let lines = &[
@@ -67,7 +66,6 @@ fn rectangle_of_height_1() {
 }
 
 #[test]
-#[ignore]
 fn rectangle_of_width_1() {
     #[rustfmt::skip]
     let lines = &[
@@ -79,7 +77,6 @@ fn rectangle_of_width_1() {
 }
 
 #[test]
-#[ignore]
 fn unit_square() {
     #[rustfmt::skip]
     let lines = &[
@@ -90,7 +87,6 @@ fn unit_square() {
 }
 
 #[test]
-#[ignore]
 fn test_incomplete_rectangles() {
     #[rustfmt::skip]
     let lines = &[
@@ -104,7 +100,6 @@ fn test_incomplete_rectangles() {
 }
 
 #[test]
-#[ignore]
 fn test_complicated() {
     let lines = &[
         "+------+----+",
@@ -117,7 +112,6 @@ fn test_complicated() {
 }
 
 #[test]
-#[ignore]
 fn test_not_so_complicated() {
     let lines = &[
         "+------+----+",
@@ -130,7 +124,6 @@ fn test_not_so_complicated() {
 }
 
 #[test]
-#[ignore]
 fn test_large_input_with_many_rectangles() {
     let lines = &[
         "+---+--+----+",
@@ -146,7 +139,6 @@ fn test_large_input_with_many_rectangles() {
 }
 
 #[test]
-#[ignore]
 fn test_three_rectangles_no_shared_parts() {
     #[rustfmt::skip]
     let lines = &[
