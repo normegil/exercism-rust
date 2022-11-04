@@ -12,16 +12,7 @@ impl Clock {
     }
 
     pub fn add_minutes(&self, minutes: i32) -> Self {
-        let mut hours = self.hours;
-        let mut total_minutes = self.minutes + minutes;
-        if total_minutes >= 60 {
-            total_minutes -= 60;
-            hours += 1;
-        }
-        if hours >= 24 {
-            hours -= 24;
-        }
-        Clock { hours: hours, minutes: total_minutes }
+        Clock::new(self.hours, self.minutes + minutes)
     }
 
     fn normalize_minutes(&self) -> Self {
