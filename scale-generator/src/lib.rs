@@ -9,48 +9,70 @@
 // One common idiom is to define an Error enum which wraps all potential
 // errors. Another common idiom is to use a helper type such as failure::Error
 // which does more or less the same thing but automatically.
-use std::fmt::Display;
-
 #[derive(Debug)]
 pub struct Error;
 
 pub struct Scale {
     tonic: Note,
+    display: NoteDisplayType,
+    intervals: Vec<Step>,
 }
 
 impl Scale {
     pub fn new(tonic: &str, intervals: &str) -> Result<Scale, Error> {
-        unimplemented!(
-            "Construct a new scale with tonic {} and intervals {}",
-            tonic,
-            intervals
-        )
+        let intervals = Step::from(intervals);
+        let (note, display) = Note::from(tonic);
+        Result::Ok(Scale { tonic: note, display: display, intervals: intervals })
     }
 
     pub fn chromatic(tonic: &str) -> Result<Scale, Error> {
-        Result::Ok(Scale { tonic: Note::from(tonic) })
+        let chromatic_interval = "mmmmmmmmmmmm";
+        Scale::new(tonic, chromatic_interval)
     }
 
     pub fn enumerate(&self) -> Vec<String> {
-        let display_type = self.tonic.display_type();
         let notes = Note::as_array();
-        let start_pos = notes.iter().position(|n| *n == self.tonic).unwrap();
+        let mut current_pos = notes.iter().position(|n| *n == self.tonic).unwrap();
         let mut scale: Vec<String> = Vec::new();
-        for index in 0..13 {
-            let mut note_index = start_pos + index;
-            if note_index >= notes.len() {
-                note_index = note_index - notes.len()
+        for interval in self.intervals.iter() {
+            scale.push(notes[current_pos].as_str(self.display).to_string());
+            match interval {
+                Step::Major => current_pos += 2,
+                Step::Minor => current_pos += 1,
+                Step::Harmonic => current_pos += 3,
             }
-            scale.push(notes[note_index].as_str(display_type).to_string());
+            if current_pos >= notes.len() {
+                current_pos = current_pos - notes.len();
+            }
         }
+        scale.push(notes[current_pos].as_str(self.display).to_string());
         scale
     }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum NoteDisplayType {
     Sharp,
     Flat
+}
+
+enum Step {
+    Major,
+    Minor,
+    Harmonic
+}
+
+impl Step {
+    fn from(intervals: &str) -> Vec<Self> {
+        intervals.chars().map(|c| {
+            match c {
+                'M' => Step::Major,
+                'm' => Step::Minor,
+                'A' => Step::Harmonic,
+                _ => unimplemented!("Unsupported char {}", c),
+            }
+        }).collect()
+    }
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -119,25 +141,21 @@ impl Note {
         }
     }
 
-    fn display_type(&self) -> NoteDisplayType {
-        match self {
-            Note::C => NoteDisplayType::Sharp,
-            Note::F => NoteDisplayType::Flat, 
-            _ => unimplemented!("Unknown note to display type association: {:?}", self)
-        }
-    } 
-}
-
-impl From<&str> for Note {
-    fn from(note: &str) -> Self {
+    fn from(note: &str) -> (Self, NoteDisplayType) {
         match note {
-            "A" => Note::A,
-            "B" => Note::B,
-            "C" => Note::C,
-            "D" => Note::D,
-            "E" => Note::E,
-            "F" => Note::F,
-            "G" => Note::G,
+            "A" | "a" => (Note::A, NoteDisplayType::Sharp),
+            "bb" => (Note::ASharp, NoteDisplayType::Flat),
+            "B" => (Note::B, NoteDisplayType::Sharp),
+            "C" => (Note::C, NoteDisplayType::Sharp),
+            "Db" => (Note::CSharp, NoteDisplayType::Flat),
+            "D" => (Note::D, NoteDisplayType::Sharp),
+            "d" => (Note::D, NoteDisplayType::Flat),
+            "Eb" => (Note::DSharp, NoteDisplayType::Flat),
+            "E" | "e" => (Note::E, NoteDisplayType::Sharp),
+            "F" => (Note::F, NoteDisplayType::Flat),
+            "f#" => (Note::FSharp, NoteDisplayType::Sharp),
+            "G" => (Note::G, NoteDisplayType::Sharp),
+            "g" => (Note::G, NoteDisplayType::Flat),
             _ => unimplemented!("Unknown note: {:?}", note)
         }
     }
