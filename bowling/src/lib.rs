@@ -48,10 +48,10 @@ impl BowlingGame {
         let frames_nb = self.frames.len();
         if frames_nb < 10 {
             return Option::None;
-        } else if frames_nb == 10 && self.frames[frames_nb-1].is_strike() {
+        } else if frames_nb == 10 && (self.frames[frames_nb-1].is_strike() || self.frames[frames_nb-1].is_spare()) {
             return Option::None;
         } else if frames_nb == 11 && self.frames[frames_nb-1].is_strike() && self.frames[frames_nb-2].is_strike() {
-            return Option::None;
+            return Option::None;    
         }
 
         let mut score = 0;

@@ -374,7 +374,6 @@ fn if_the_last_frame_is_a_spare_you_cannot_create_a_score_before_extra_roll_is_t
 }
 
 #[test]
-#[ignore]
 fn cannot_roll_after_bonus_roll_for_spare() {
     let mut game = BowlingGame::new();
 
@@ -390,7 +389,6 @@ fn cannot_roll_after_bonus_roll_for_spare() {
 }
 
 #[test]
-#[ignore]
 fn cannot_roll_after_bonus_roll_for_strike() {
     let mut game = BowlingGame::new();
 
@@ -406,7 +404,6 @@ fn cannot_roll_after_bonus_roll_for_strike() {
 }
 
 #[test]
-#[ignore]
 fn last_two_strikes_followed_by_only_last_bonus_with_non_strike_points() {
     let mut game = BowlingGame::new();
     for _ in 0..16 {
