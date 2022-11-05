@@ -45,14 +45,19 @@ impl BowlingGame {
     }
 
     pub fn score(&self) -> Option<u16> {
-        if self.frames.len() < 10 {
+        let frames_nb = self.frames.len();
+        if frames_nb < 10 {
+            return Option::None;
+        } else if frames_nb == 10 && self.frames[frames_nb-1].is_strike() {
+            return Option::None;
+        } else if frames_nb == 11 && self.frames[frames_nb-1].is_strike() && self.frames[frames_nb-2].is_strike() {
             return Option::None;
         }
 
         let mut score = 0;
-        let nb_frames = self.frames.len();
         for (index, frame) in self.frames.iter().enumerate() {
-            if frame.is_strike() {
+            let is_extra_frame = index >= 10;
+            if frame.is_strike() && !is_extra_frame {
                 score += 10;
                 let next_frame = &self.frames[index + 1];
                 if !next_frame.is_strike() || index + 1 == 11 {
@@ -61,14 +66,14 @@ impl BowlingGame {
                     let next_next_frame = &self.frames[index + 2];
                     score += 10 + next_next_frame.first_throw_score();
                 }
-            } else if frame.is_spare() {
+            } else if frame.is_spare() && !is_extra_frame{
                 score += 10;
                 if index == 9 {
                     score += self.frames[index + 1].first_throw_score()
                 } else {
                     score += self.frames[index + 1].first_throw_score()
                 }
-            } else if index < 10 {
+            } else if !is_extra_frame {
                 score += frame.first_throw_score() + frame.second_throw_score();
             }
         }
@@ -101,6 +106,9 @@ impl Frame {
     }
 
     fn add_second(&mut self, second: u16) -> Result<(), Error> {
+        if self.first + second > 10 {
+            return Result::Err(Error::NotEnoughPinsLeft);
+        }
         self.second = Option::Some(second);
         Result::Ok({})
     }
