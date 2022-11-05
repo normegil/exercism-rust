@@ -5,7 +5,7 @@ pub enum Error {
 }
 
 pub struct BowlingGame {
-    frames: Vec<Frame>
+    frames: Vec<Frame>,
 }
 
 impl BowlingGame {
@@ -15,11 +15,24 @@ impl BowlingGame {
 
     pub fn roll(&mut self, pins: u16) -> Result<(), Error> {
         let frames_nb = self.frames.len();
+        let mut allow_new_frame = frames_nb < 10;
         if frames_nb > 0 {
+            let previous_frame_is_strike = if frames_nb <= 1 { false } else { self.frames[frames_nb-2].is_strike() };
             let last_frame = &mut self.frames[frames_nb-1];
             if !last_frame.is_complete() {
+                if frames_nb > 10 && !previous_frame_is_strike {
+                    return Result::Err(Error::GameComplete);
+                }
                 return last_frame.add_second(pins);
+            } else if last_frame.is_spare() {
+                allow_new_frame = true;
+            } else if last_frame.is_strike() {
+                allow_new_frame = true;
             }
+        }
+
+        if !allow_new_frame {
+            return Result::Err(Error::GameComplete);
         }
 
         match Frame::new(pins) {
@@ -35,7 +48,31 @@ impl BowlingGame {
         if self.frames.len() < 10 {
             return Option::None;
         }
-        Option::Some(0)
+
+        let mut score = 0;
+        let nb_frames = self.frames.len();
+        for (index, frame) in self.frames.iter().enumerate() {
+            if frame.is_strike() {
+                score += 10;
+                let next_frame = &self.frames[index + 1];
+                if !next_frame.is_strike() || index + 1 == 11 {
+                    score += next_frame.first_throw_score() + next_frame.second_throw_score()
+                } else {
+                    let next_next_frame = &self.frames[index + 2];
+                    score += 10 + next_next_frame.first_throw_score();
+                }
+            } else if frame.is_spare() {
+                score += 10;
+                if index == 9 {
+                    score += self.frames[index + 1].first_throw_score()
+                } else {
+                    score += self.frames[index + 1].first_throw_score()
+                }
+            } else if index < 10 {
+                score += frame.first_throw_score() + frame.second_throw_score();
+            }
+        }
+        Option::Some(score)
     }
 }
 
@@ -52,6 +89,17 @@ impl Frame {
         Result::Ok(Frame { first, second: Option::None })
     }
 
+    fn first_throw_score(&self) -> u16 {
+        return self.first;
+    }
+
+    fn second_throw_score(&self) -> u16 {
+        match self.second {
+            Option::None => return 0,
+            Option::Some(second) => second
+        }
+    }
+
     fn add_second(&mut self, second: u16) -> Result<(), Error> {
         self.second = Option::Some(second);
         Result::Ok({})
@@ -59,6 +107,16 @@ impl Frame {
 
     fn is_strike(&self) -> bool {
         self.first == 10 && self.second == Option::None
+    }
+
+    fn is_spare(&self) -> bool {
+        if self.is_strike() {
+            return false;
+        }
+        if self.second.is_none() {
+            return false;
+        }
+        return self.first + self.second.unwrap() == 10
     }
 
     fn is_complete(&self) -> bool {
