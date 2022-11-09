@@ -8,15 +8,34 @@ pub struct Palindrome(u64);
 impl Palindrome {
     /// Create a `Palindrome` only if `value` is in fact a palindrome when represented in base ten. Otherwise, `None`.
     pub fn new(value: u64) -> Option<Palindrome> {
-        unimplemented!(
-            "if the value {} is a palindrome return Some, otherwise return None",
-            value
-        );
+        match Palindrome::is_palindrome(value, value) {
+            (_, true) => Option::Some(Palindrome(value)),
+            (_, false) => Option::None,
+        }
+    }
+
+    fn is_palindrome(val: u64, dup_val:u64) -> (u64, bool) {
+        let mut is_palin = true;
+        let mut dup = dup_val;
+
+        if val == 0 {
+            return (dup_val, true);
+        } else {
+            (dup, is_palin) = Palindrome::is_palindrome(val / 10, dup_val);
+        }
+
+        if !is_palin {
+            return (0, false);
+        } else if val % 10 == dup % 10 {
+            return (dup / 10, is_palin)
+        } else {
+            return (0, false);
+        }
     }
 
     /// Get the value of this palindrome.
     pub fn into_inner(self) -> u64 {
-        unimplemented!("return inner value of a Palindrome");
+        self.0
     }
 }
 

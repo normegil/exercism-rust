@@ -30,7 +30,6 @@ fn test_palindrome_new_return_some() {
 }
 
 #[test]
-#[ignore]
 /// test `Palindrome::new` with invalid input
 fn test_palindrome_new_return_none() {
     for v in [12, 2322, 23443, 1233211, 8932343] {
@@ -39,7 +38,6 @@ fn test_palindrome_new_return_none() {
 }
 
 #[test]
-#[ignore]
 /// finds the smallest palindrome from single digit factors
 fn test_finds_the_smallest_palindrome_from_single_digit_factors() {
     process_smallest_case((1, 9), Some(1));
