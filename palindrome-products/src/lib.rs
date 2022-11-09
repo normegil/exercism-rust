@@ -4,7 +4,7 @@ use std::collections::HashSet;
 ///
 /// A struct with a single field which is used to constrain behavior like this is called a "newtype", and its use is
 /// often referred to as the "newtype pattern". This is a fairly common pattern in Rust.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Palindrome(u64);
 
 impl Palindrome {
@@ -17,8 +17,8 @@ impl Palindrome {
     }
 
     fn is_palindrome(val: u64, dup_val:u64) -> (u64, bool) {
-        let mut is_palin = true;
-        let mut dup = dup_val;
+        let is_palin;
+        let dup ;
 
         if val == 0 {
             return (dup_val, true);
@@ -43,14 +43,18 @@ impl Palindrome {
 
 pub fn palindrome_products(min: u64, max: u64) -> Option<(Palindrome, Palindrome)> {
     let mut set: HashSet<u64> = HashSet::new();
-    for i in min..max {
-        for j in i..max {
+    for i in min..max+1 {
+        for j in i..max+1 {
             set.insert(i * j);
         }
     }
 
-    let pal: Vec<Palindrome> = set.iter().filter_map(|nb| Palindrome::new(*nb)).collect();
+    let mut pal: Vec<Palindrome> = set.iter().filter_map(|nb| Palindrome::new(*nb)).collect();
     pal.sort();
-
-    unimplemented!()
+    
+    if pal.len() == 0 {
+        return Option::None;
+    } else {
+        return Option::Some((pal[0], pal[pal.len()-1]));
+    }
 }
