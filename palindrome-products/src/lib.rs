@@ -42,19 +42,28 @@ impl Palindrome {
 }
 
 pub fn palindrome_products(min: u64, max: u64) -> Option<(Palindrome, Palindrome)> {
-    let mut set: HashSet<u64> = HashSet::new();
-    for i in min..max+1 {
-        for j in i..max+1 {
-            set.insert(i * j);
+    let mut min_pal: Option<Palindrome> = Option::None;
+    let mut max_pal: Option<Palindrome> = Option::None;
+    for i in min..=max {
+        for j in i..=max {
+            let product = i*j;
+            
+            if min_pal == Option::None || min_pal.unwrap().into_inner() > product {
+                if let Option::Some(pal) = Palindrome::new(product) {
+                    min_pal = Option::Some(pal);
+                }
+            }
+            if max_pal == Option::None || max_pal.unwrap().into_inner() < product {
+                if let Option::Some(pal) = Palindrome::new(product) {
+                    max_pal = Option::Some(pal);
+                }
+            }
         }
     }
 
-    let mut pal: Vec<Palindrome> = set.iter().filter_map(|nb| Palindrome::new(*nb)).collect();
-    pal.sort();
-    
-    if pal.len() == 0 {
+    if min_pal.is_none() {
         return Option::None;
     } else {
-        return Option::Some((pal[0], pal[pal.len()-1]));
+        return Option::Some((min_pal.unwrap(), max_pal.unwrap()));
     }
 }
